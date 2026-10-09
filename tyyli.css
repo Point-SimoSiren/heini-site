@@ -34,11 +34,17 @@ em { font-weight:400; color:#62735d; }
 .hero { padding-top:62px; }
 .hero-heading { display:grid; grid-template-columns:1.65fr 1fr; align-items:end; gap:65px; margin-bottom:48px; }
 .hero-intro { max-width:350px; padding-bottom:7px; }
+.hero h1 { font-size:clamp(3.2rem,5.7vw,5.6rem); }
+.hero-tagline { font:italic clamp(1.55rem,2.2vw,2rem)/1.2 var(--serif); color:#62735d; }
 .text-link { display:inline-flex; align-items:center; gap:25px; padding:7px 0; border-bottom:1px solid var(--ink); font-size:.88rem; line-height:1.5; }
 .text-link:hover { color:#62735d; }
 .landscape { position:relative; }
-.landscape img { height:400px; object-position:50% 60%; }
+.landscape img { height:480px; object-position:50% 75%; }
 .hero-caption { display:flex; justify-content:space-between; gap:20px; padding:18px 0; color:var(--muted); font-size:.74rem; border-bottom:1px solid var(--line); }
+.opening-story { padding-block:82px 100px; border-bottom:1px solid var(--line); }
+.story-copy { width:min(760px,100%); margin-inline:auto; }
+.story-copy p { font-size:1.13rem; line-height:1.85; }
+.story-copy .story-ending { margin:36px 0 0; font:italic clamp(1.8rem,2.7vw,2.5rem)/1.25 var(--serif); color:#62735d; }
 .section { padding-block:100px; }
 .section-heading { display:grid; grid-template-columns:1fr 1fr; gap:100px; align-items:start; }
 .lead { max-width:520px; color:var(--muted); font-size:1.02rem; }
@@ -55,12 +61,12 @@ em { font-weight:400; color:#62735d; }
 .prose { max-width:580px; }
 .prose p { color:#4d594f; }
 .prose .intro-text { font-size:1.1rem; color:var(--ink); }
+.audience-list { padding-left:1.35rem; margin:0 0 1.4rem; color:#4d594f; }
+.audience-list li { padding-left:.3rem; margin-bottom:.85rem; font-size:.98rem; line-height:1.75; }
 .prose .text-link { margin-top:12px; }
 .about-grid { display:grid; grid-template-columns:1fr 1.2fr; align-items:center; gap:90px; }
 .room-image img { height:500px; }
-.room-image figcaption { font-size:.69rem; line-height:1.5; color:var(--muted); margin-top:10px; }
 .signature { font:italic 2.4rem var(--serif); margin-top:32px; }
-.draft-note { font-size:.78rem; line-height:1.7; color:var(--muted); }
 .faq-section { display:grid; grid-template-columns:1fr 1.2fr; gap:90px; border-top:1px solid var(--line); }
 .faq-list { border-top:1px solid var(--line); }
 details { border-bottom:1px solid var(--line); }
@@ -70,8 +76,23 @@ summary::after { content:'+'; font-size:1.4rem; flex-shrink:0; }
 details[open] summary::after { content:'−'; }
 details p { font-size:.91rem; color:var(--muted); padding-right:24px; }
 .contact { background:#e8ebe2; }
-.contact-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:90px; align-items:center; }
-.contact-details { border-left:1px solid #bac5b4; padding-left:60px; }
+.contact-grid { display:grid; grid-template-columns:1fr 1fr; column-gap:90px; row-gap:46px; align-items:start; }
+.contact-form { grid-column:2; grid-row:1 / span 2; padding:36px; background:var(--paper); border:1px solid #cdd7c9; }
+.contact-form h3 { margin-bottom:26px; }
+.form-field { margin-bottom:20px; }
+.form-field label { display:block; margin-bottom:8px; font-size:.85rem; font-weight:500; }
+.form-field input,.form-field textarea { display:block; width:100%; padding:13px 14px; border:1px solid #bac5b4; border-radius:0; background:#fff; color:var(--ink); font:inherit; font-size:1rem; }
+.form-field input { min-height:48px; }
+.form-field textarea { min-height:150px; resize:vertical; }
+.form-field input:focus-visible,.form-field textarea:focus-visible { outline:2px solid #43634a; outline-offset:2px; }
+.form-note { color:var(--muted); font-size:.78rem; line-height:1.6; }
+.submit-button { display:inline-flex; align-items:center; justify-content:space-between; gap:30px; width:100%; min-height:50px; padding:12px 18px; border:1px solid var(--ink); background:var(--ink); color:#fff; }
+.submit-button:hover { background:#425649; }
+.submit-button:disabled { opacity:.65; cursor:wait; }
+.form-status { min-height:1.5em; margin:14px 0 0; font-size:.85rem; line-height:1.5; }
+.form-status[data-state="error"] { color:#923b2c; }
+.form-status[data-state="success"] { color:#315b39; }
+.contact-details { grid-column:1; border-top:1px solid #bac5b4; padding-top:30px; }
 .contact-details h3 { font-size:2.1rem; margin-bottom:8px; }
 .contact-details dl { margin:24px 0 0; }
 .contact-details dt { font-size:.72rem; color:var(--muted); margin:20px 0 8px; }
@@ -101,7 +122,9 @@ details p { font-size:.91rem; color:var(--muted); padding-right:24px; }
   .hero { padding-top:40px; }
   .hero-heading { grid-template-columns:1fr; gap:26px; margin-bottom:30px; }
   .hero-intro { max-width:520px; }
-  .landscape img { height:300px; }
+  .landscape img { height:310px; object-position:35% 75%; }
+  .opening-story { padding-block:65px; }
+  .story-copy p { font-size:1rem; }
   .section { padding-block:65px; }
   .section-heading,.detail-grid,.about-grid,.faq-section,.contact-grid { grid-template-columns:1fr; gap:25px; }
   .section-heading h2 { margin-bottom:0; }
@@ -110,7 +133,9 @@ details p { font-size:.91rem; color:var(--muted); padding-right:24px; }
   .row-arrow { grid-column:2; grid-row:1; }
   .room-image { max-width:520px; }
   .room-image img { height:370px; }
-  .contact-details { border-left:0; border-top:1px solid #bac5b4; padding:30px 0 0; }
+  .contact-form,.contact-details { grid-column:1; grid-row:auto; }
+  .contact-form { padding:26px 20px; }
+  .contact-details { padding-top:30px; }
 }
 @media (max-width:420px) {
   .draft-bar { padding:9px 16px; font-size:.65rem; gap:18px; }
@@ -126,7 +151,6 @@ details p { font-size:.91rem; color:var(--muted); padding-right:24px; }
 @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
 
 /* Esittely, koulutus ja hinnasto */
-.personal-motto { margin:28px 0; padding-left:24px; border-left:1px solid #a9b5a3; font:italic 1.8rem/1.45 var(--serif); color:#62735d; }
 .education-list { list-style:none; padding:0; margin:0; }
 .education-list li { padding:14px 0; border-bottom:1px solid var(--line); line-height:1.65; }
 .education-list li:first-child { border-top:1px solid var(--line); }
