@@ -1,3 +1,25 @@
+const uiText = document.documentElement.lang === 'en' ? {
+  menu: 'Menu', close: 'Close',
+  unavailable: 'The contact form will be available when the server is published. You can contact me by email.',
+  required: 'Enter your name and message before sending.',
+  sending: 'Sending your message…',
+  invalidResponse: 'The server returned an invalid response',
+  sendFailed: 'Sending failed', unknownError: 'Unknown error',
+  success: 'Thank you! Your message was sent successfully.',
+  failure: 'Your message could not be sent. Please try again later or contact me by email.',
+  consoleError: 'Contact form submission failed:',
+} : {
+  menu: 'Valikko', close: 'Sulje',
+  unavailable: 'Lomakkeen lähetys avataan, kun palvelin on julkaistu. Voit ottaa yhteyttä sähköpostitse.',
+  required: 'Täytä nimi ja viesti ennen lähettämistä.',
+  sending: 'Lähetetään viestiä…',
+  invalidResponse: 'Palvelin palautti virheellisen vastauksen',
+  sendFailed: 'Lähetys epäonnistui', unknownError: 'Tuntematon virhe',
+  success: 'Kiitos viestistäsi! Viesti lähetettiin onnistuneesti.',
+  failure: 'Viestin lähetys epäonnistui. Yritä myöhemmin uudelleen tai lähetä sähköpostia.',
+  consoleError: 'Yhteydenottolomakkeen lähetys epäonnistui:',
+};
+
 // Mobile navigation for the standalone site.
 const siteHeader = document.querySelector('.site-header');
 if (siteHeader) {
@@ -17,13 +39,13 @@ if (menuButton && mainNavigation) {
   const closeMenu = () => {
     mainNavigation.classList.remove('open');
     menuButton.setAttribute('aria-expanded', 'false');
-    menuButton.textContent = 'Valikko';
+    menuButton.textContent = uiText.menu;
   };
   menuButton.addEventListener('click', () => {
     const open = menuButton.getAttribute('aria-expanded') !== 'true';
     mainNavigation.classList.toggle('open', open);
     menuButton.setAttribute('aria-expanded', String(open));
-    menuButton.textContent = open ? 'Sulje' : 'Valikko';
+    menuButton.textContent = open ? uiText.close : uiText.menu;
   });
   mainNavigation.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
   document.addEventListener('keydown', event => {
@@ -55,7 +77,7 @@ if (contactForm) {
   const isLocalPreview = ['localhost', '127.0.0.1'].includes(window.location.hostname);
   if (!isLocalPreview && ['localhost', '127.0.0.1'].includes(new URL(API_URL).hostname)) {
     submitButton.disabled = true;
-    showStatus('Lomakkeen lähetys avataan, kun palvelin on julkaistu. Voit ottaa yhteyttä sähköpostitse.', 'error');
+    showStatus(uiText.unavailable, 'error');
   } else {
     contactForm.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -64,14 +86,14 @@ if (contactForm) {
       const email = emailField.value.trim();
       const message = messageField.value.trim();
       if (!name || !message) {
-        showStatus('Täytä nimi ja viesti ennen lähettämistä.', 'error');
+        showStatus(uiText.required, 'error');
         (!name ? nameField : messageField).focus();
         return;
       }
 
       submitButton.disabled = true;
       contactForm.setAttribute('aria-busy', 'true');
-      showStatus('Lähetetään viestiä…', 'sending');
+      showStatus(uiText.sending, 'sending');
 
       try {
         const response = await fetch(API_URL, {
@@ -84,18 +106,18 @@ if (contactForm) {
         try {
           result = await response.json();
         } catch {
-          throw new Error(`Palvelin palautti virheellisen vastauksen (${response.status})`);
+          throw new Error(`${uiText.invalidResponse} (${response.status})`);
         }
 
         if (!response.ok) {
-          throw new Error(`Lähetys epäonnistui (${response.status}): ${result?.error ?? 'Tuntematon virhe'}`);
+          throw new Error(`${uiText.sendFailed} (${response.status}): ${result?.error ?? uiText.unknownError}`);
         }
 
         contactForm.reset();
-        showStatus('Kiitos viestistäsi! Viesti lähetettiin onnistuneesti.', 'success');
+        showStatus(uiText.success, 'success');
       } catch (error) {
-        console.error('Yhteydenottolomakkeen lähetys epäonnistui:', error);
-        showStatus('Viestin lähetys epäonnistui. Yritä myöhemmin uudelleen tai lähetä sähköpostia.', 'error');
+        console.error(uiText.consoleError, error);
+        showStatus(uiText.failure, 'error');
       } finally {
         submitButton.disabled = false;
         contactForm.removeAttribute('aria-busy');
