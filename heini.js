@@ -6,6 +6,10 @@ const uiText = document.documentElement.lang === 'en' ? {
   sendFailed: 'Sending failed', unknownError: 'Unknown error',
   success: 'Thank you! Your message was sent successfully.',
   failure: 'Your message could not be sent. Please try again later or contact me by email.',
+  preparing: 'Preparing the contact form. This may take about a minute…',
+  ready: 'The contact form is ready.',
+  unavailable: 'The contact form could not be prepared. Please try again or send an email.',
+  retry: 'Try again',
   consoleError: 'Contact form submission failed:',
 } : {
   menu: 'Valikko', close: 'Sulje',
@@ -15,6 +19,10 @@ const uiText = document.documentElement.lang === 'en' ? {
   sendFailed: 'Lähetys epäonnistui', unknownError: 'Tuntematon virhe',
   success: 'Kiitos viestistäsi! Viesti lähetettiin onnistuneesti.',
   failure: 'Viestin lähetys epäonnistui. Yritä myöhemmin uudelleen tai lähetä sähköpostia.',
+  preparing: 'Valmistellaan yhteydenottolomaketta. Tämä voi kestää noin minuutin…',
+  ready: 'Yhteydenottolomake on valmis.',
+  unavailable: 'Lomaketta ei saatu valmiiksi. Yritä uudelleen tai lähetä sähköpostia.',
+  retry: 'Yritä uudelleen',
   consoleError: 'Yhteydenottolomakkeen lähetys epäonnistui:',
 };
 
@@ -58,20 +66,70 @@ if (menuButton && mainNavigation) {
 const contactForm = document.getElementById('yhteydenottolomake');
 if (contactForm) {
   const API_URL = 'https://tcg-lomakeapi.onrender.com/contact';
+  const HEALTH_URL = 'https://tcg-lomakeapi.onrender.com/health';
   const SITE_ID = 'kaarisilta';
   const status = document.getElementById('contact-status');
   const submitButton = contactForm.querySelector('button[type="submit"]');
   const nameField = contactForm.elements.namedItem('name');
   const emailField = contactForm.elements.namedItem('email');
   const messageField = contactForm.elements.namedItem('message');
+  const retryButton = document.createElement('button');
+  retryButton.type = 'button';
+  retryButton.className = 'form-retry';
+  retryButton.textContent = uiText.retry;
+  retryButton.hidden = true;
+  status.insertAdjacentElement('afterend', retryButton);
+  let apiReady = false;
 
   const showStatus = (message, state) => {
     status.textContent = message;
     status.dataset.state = state;
   };
 
+  const prepareForm = async () => {
+    apiReady = false;
+    submitButton.disabled = true;
+    retryButton.hidden = true;
+    showStatus(uiText.preparing, 'loading');
+
+    // A sleeping Render service can take about a minute to start. Retry if
+    // the first response is a temporary loading page or a network error.
+    const deadline = Date.now() + 90000;
+    while (Date.now() < deadline) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 20000);
+      try {
+        const response = await fetch(HEALTH_URL, {
+          cache: 'no-store',
+          signal: controller.signal,
+        });
+        const result = await response.json();
+        if (response.ok && result.status === 'ok') {
+          apiReady = true;
+          submitButton.disabled = false;
+          showStatus(uiText.ready, 'ready');
+          return;
+        }
+      } catch {
+        // A cold start may temporarily fail; keep checking until the deadline.
+      } finally {
+        clearTimeout(timeout);
+      }
+      if (Date.now() < deadline) {
+        await new Promise(resolve => setTimeout(resolve, 4000));
+      }
+    }
+
+    showStatus(uiText.unavailable, 'error');
+    retryButton.hidden = false;
+  };
+
+  retryButton.addEventListener('click', prepareForm);
+  prepareForm();
+
   contactForm.addEventListener('submit', async (event) => {
     event.preventDefault();
+    if (!apiReady) return;
 
     const name = nameField.value.trim();
     const email = emailField.value.trim();
@@ -110,9 +168,8 @@ if (contactForm) {
       console.error(uiText.consoleError, error);
       showStatus(uiText.failure, 'error');
     } finally {
-      submitButton.disabled = false;
+      submitButton.disabled = !apiReady;
       contactForm.removeAttribute('aria-busy');
     }
   });
-  submitButton.disabled = false;
 }

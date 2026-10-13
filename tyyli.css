@@ -103,6 +103,9 @@ details p { font-size:.91rem; color:var(--muted); padding-right:24px; }
 .form-status { min-height:1.5em; margin:14px 0 0; font-size:.85rem; line-height:1.5; }
 .form-status[data-state="error"] { color:#923b2c; }
 .form-status[data-state="success"] { color:#315b39; }
+.form-retry { margin-top:8px; padding:4px 0; border:0; background:none; color:var(--ink); font:inherit; font-size:.85rem; text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+.form-retry[hidden] { display:none; }
+.form-retry:focus-visible { outline:2px solid #43634a; outline-offset:3px; }
 .contact-details { grid-column:1; border-top:1px solid #bac5b4; padding-top:30px; }
 .contact-details h3 { font-size:2.1rem; margin-bottom:8px; }
 .contact-details dl { margin:24px 0 0; }
