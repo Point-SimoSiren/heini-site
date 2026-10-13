@@ -49,7 +49,10 @@ em { font-weight:400; color:#62735d; }
 .landscape img { height:480px; object-position:50% 75%; }
 .hero-caption { display:flex; justify-content:space-between; gap:20px; padding:18px 0; color:var(--muted); font-size:.74rem; border-bottom:1px solid var(--line); }
 .opening-story { padding-block:82px 100px; border-bottom:1px solid var(--line); }
-.story-copy { width:min(760px,100%); margin-inline:auto; }
+.story-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(220px,320px); align-items:center; gap:clamp(35px,5vw,70px); }
+.story-image { width:100%; justify-self:end; }
+.story-image img { height:auto; }
+.story-copy { max-width:760px; }
 .story-copy p { font-size:1.13rem; line-height:1.85; }
 .story-copy .story-ending { margin:36px 0 0; font:italic clamp(1.8rem,2.7vw,2.5rem)/1.25 var(--serif); color:#62735d; }
 .section { padding-block:100px; }
@@ -72,7 +75,8 @@ em { font-weight:400; color:#62735d; }
 .audience-list li { padding-left:.3rem; margin-bottom:.85rem; font-size:.98rem; line-height:1.75; }
 .prose .text-link { margin-top:12px; }
 .about-grid { display:grid; grid-template-columns:1fr 1.2fr; align-items:center; gap:90px; }
-.room-image img { height:500px; }
+.portrait-image { width:min(100%,280px); justify-self:center; align-self:start; }
+.portrait-image img { height:auto; }
 .signature { font:italic 2.4rem var(--serif); margin-top:32px; }
 .faq-section { display:grid; grid-template-columns:1fr 1.2fr; gap:90px; border-top:1px solid var(--line); }
 .faq-list { border-top:1px solid var(--line); }
@@ -131,6 +135,8 @@ details p { font-size:.91rem; color:var(--muted); padding-right:24px; }
   .hero-intro { max-width:520px; }
   .landscape img { height:310px; object-position:35% 75%; }
   .opening-story { padding-block:65px; }
+  .story-grid { grid-template-columns:1fr; gap:30px; }
+  .story-image { width:min(62%,230px); }
   .story-copy p { font-size:1rem; }
   .section { padding-block:65px; }
   .section-heading,.detail-grid,.about-grid,.faq-section,.contact-grid { grid-template-columns:1fr; gap:25px; }
@@ -138,8 +144,7 @@ details p { font-size:.91rem; color:var(--muted); padding-right:24px; }
   .service-row { grid-template-columns:1fr 24px; gap:15px; }
   .service-row p { grid-column:1; }
   .row-arrow { grid-column:2; grid-row:1; }
-  .room-image { max-width:520px; }
-  .room-image img { height:370px; }
+  .portrait-image { width:min(70%,240px); }
   .contact-form,.contact-details { grid-column:1; grid-row:auto; }
   .contact-form { padding:26px 20px; }
   .contact-details { padding-top:30px; }
