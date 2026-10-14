@@ -9,8 +9,8 @@
   <link rel="alternate" hreflang="fi" href="https://heini.onrender.com/">
   <link rel="alternate" hreflang="en" href="https://heini.onrender.com/en/">
   <title>Oivalluksen kaarisilta | Heini Sirén</title>
-  <link rel="stylesheet" href="../tyyli.css?v=contact-ready-1">
-  <script src="../heini.js?v=contact-ready-1" defer></script>
+  <link rel="stylesheet" href="../tyyli.css?v=privacy-1">
+  <script src="../heini.js?v=privacy-1" defer></script>
 </head>
 <body>
   <a class="skip" href="#sisalto">Skip to content</a>
@@ -185,8 +185,10 @@
           <h3>Send a message</h3>
           <div class="form-field"><label for="contact-name">Name</label><input id="contact-name" name="name" type="text" autocomplete="name" maxlength="120" required></div>
           <div class="form-field"><label for="contact-email">Email</label><input id="contact-email" name="email" type="email" autocomplete="email" maxlength="254" required></div>
-          <div class="form-field"><label for="contact-message">Message</label><textarea id="contact-message" name="message" rows="6" maxlength="5000" aria-describedby="contact-note" required></textarea></div>
+          <div class="form-field"><label for="contact-message">Message</label><textarea id="contact-message" name="message" rows="6" maxlength="5000" aria-describedby="contact-note personal-data-warning" required></textarea></div>
           <p class="form-note" id="contact-note">Briefly describe why you are getting in touch. Please do not include sensitive health information.</p>
+          <p class="form-warning" id="personal-data-warning" role="alert" hidden></p>
+          <p class="form-note">Read the <a href="../tietosuoja.html" lang="fi">privacy notice (in Finnish)</a> before sending a message.</p>
           <button class="submit-button" type="submit" disabled>Send message <span aria-hidden="true">↗</span></button>
           <p class="form-status" id="contact-status" role="status" aria-live="polite"></p>
           <noscript><p class="form-note">The form requires JavaScript. You can also contact me by email.</p></noscript>
@@ -195,6 +197,6 @@
       </div>
     </section>
   </main>
-  <footer class="site-footer wrap"><p>Oivalluksen kaarisilta · Heini Sirén · Porvoo<br><span>Website · Powered By Tarmola Code Garage</span></p><a href="#sisalto">Back to top <span aria-hidden="true">↑</span></a></footer>
+  <footer class="site-footer wrap"><p>Oivalluksen kaarisilta · Heini Sirén · Porvoo<br><span>Website · Powered By Tarmola Code Garage</span></p><a href="../tietosuoja.html" lang="fi">Privacy notice (Finnish)</a><a href="#sisalto">Back to top <span aria-hidden="true">↑</span></a></footer>
 </body>
 </html>

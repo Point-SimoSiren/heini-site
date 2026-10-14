@@ -10,6 +10,8 @@ const uiText = document.documentElement.lang === 'en' ? {
   ready: 'The contact form is ready.',
   unavailable: 'The contact form could not be prepared. Please try again or send an email.',
   retry: 'Try again',
+  personalIdWarning: 'This form appears to contain a Finnish personal identity code. Remove it before sending.',
+  birthDateWarning: 'This form contains a date that could be a date of birth. Please remove dates of birth before sending. For privacy, the form does not accept full dates.',
   consoleError: 'Contact form submission failed:',
 } : {
   menu: 'Valikko', close: 'Sulje',
@@ -23,7 +25,49 @@ const uiText = document.documentElement.lang === 'en' ? {
   ready: 'Yhteydenottolomake on valmis.',
   unavailable: 'Lomaketta ei saatu valmiiksi. Yritä uudelleen tai lähetä sähköpostia.',
   retry: 'Yritä uudelleen',
+  personalIdWarning: 'Lomakkeessa näyttää olevan henkilötunnus. Poista se ennen lähettämistä.',
+  birthDateWarning: 'Lomakkeessa on päivämäärä, joka voi olla syntymäaika. Älä lähetä syntymäaikaa lomakkeella. Tietosuojan vuoksi lomake ei hyväksy kokonaisia päivämääriä.',
   consoleError: 'Yhteydenottolomakkeen lähetys epäonnistui:',
+};
+
+const isPlausibleBirthDate = (day, month, year) => {
+  const currentYear = new Date().getFullYear();
+  if (year < currentYear - 125 || year > currentYear || month < 1 || month > 12) return false;
+  const daysInMonth = new Date(year, month, 0).getDate();
+  return day >= 1 && day <= daysInMonth && new Date(year, month - 1, day) <= new Date();
+};
+
+const detectSensitiveDate = (value) => {
+  // Finnish personal identity codes: original and newer century separators.
+  const personalId = /(?:^|[^0-9A-Za-z])(\d{2})(\d{2})(\d{2})\s*([+\-ABCDEFYXWVU])\s*\d{3}[0-9A-Y](?![0-9A-Za-z])/gi;
+  for (const match of value.matchAll(personalId)) {
+    const separator = match[4].toUpperCase();
+    const century = separator === '+' ? 1800 : '-YXWVU'.includes(separator) ? 1900 : 2000;
+    if (isPlausibleBirthDate(Number(match[1]), Number(match[2]), century + Number(match[3]))) {
+      return 'personalId';
+    }
+  }
+
+  const numericDates = [
+    /\b(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4}|\d{2})\b/g,
+    /\b(\d{4})[.\/-](\d{1,2})[.\/-](\d{1,2})\b/g,
+    /(?:^|[\s(])(\d{2})(\d{2})(\d{4})(?!\d)/g,
+  ];
+  for (const [index, pattern] of numericDates.entries()) {
+    for (const match of value.matchAll(pattern)) {
+      const day = Number(index === 1 ? match[3] : match[1]);
+      const month = Number(match[2]);
+      const yearText = index === 1 ? match[1] : match[3];
+      const shortYear = Number(yearText);
+      const year = yearText.length === 2 ? (shortYear <= new Date().getFullYear() % 100 ? 2000 : 1900) + shortYear : shortYear;
+      if (isPlausibleBirthDate(day, month, year)) return 'birthDate';
+    }
+  }
+
+  if (/(?:syntymäaika(?:ni)?|syntymäpäivä(?:ni)?|syntynyt|date of birth|birthdate|born)\b.{0,30}\d{2,4}/i.test(value)) {
+    return 'birthDate';
+  }
+  return null;
 };
 
 // Mobile navigation for the standalone site.
@@ -73,6 +117,7 @@ if (contactForm) {
   const nameField = contactForm.elements.namedItem('name');
   const emailField = contactForm.elements.namedItem('email');
   const messageField = contactForm.elements.namedItem('message');
+  const personalDataWarning = document.getElementById('personal-data-warning');
   const retryButton = document.createElement('button');
   retryButton.type = 'button';
   retryButton.className = 'form-retry';
@@ -80,6 +125,25 @@ if (contactForm) {
   retryButton.hidden = true;
   status.insertAdjacentElement('afterend', retryButton);
   let apiReady = false;
+  let isSending = false;
+
+  const updateSensitiveWarning = () => {
+    const nameIssue = detectSensitiveDate(nameField.value);
+    const messageIssue = detectSensitiveDate(messageField.value);
+    const issue = nameIssue || messageIssue;
+    if (personalDataWarning.dataset.kind !== (issue || '')) {
+      personalDataWarning.textContent = issue === 'personalId' ? uiText.personalIdWarning : issue === 'birthDate' ? uiText.birthDateWarning : '';
+      personalDataWarning.dataset.kind = issue || '';
+    }
+    personalDataWarning.hidden = !issue;
+    nameField.setAttribute('aria-invalid', String(Boolean(nameIssue)));
+    messageField.setAttribute('aria-invalid', String(Boolean(messageIssue)));
+    submitButton.disabled = !apiReady || isSending || Boolean(issue);
+    return issue;
+  };
+
+  nameField.addEventListener('input', updateSensitiveWarning);
+  messageField.addEventListener('input', updateSensitiveWarning);
 
   const showStatus = (message, state) => {
     status.textContent = message;
@@ -88,7 +152,7 @@ if (contactForm) {
 
   const prepareForm = async () => {
     apiReady = false;
-    submitButton.disabled = true;
+    updateSensitiveWarning();
     retryButton.hidden = true;
     showStatus(uiText.preparing, 'loading');
 
@@ -106,7 +170,7 @@ if (contactForm) {
         const result = await response.json();
         if (response.ok && result.status === 'ok') {
           apiReady = true;
-          submitButton.disabled = false;
+          updateSensitiveWarning();
           showStatus(uiText.ready, 'ready');
           return;
         }
@@ -130,6 +194,11 @@ if (contactForm) {
   contactForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!apiReady) return;
+    const sensitiveIssue = updateSensitiveWarning();
+    if (sensitiveIssue) {
+      (detectSensitiveDate(nameField.value) ? nameField : messageField).focus();
+      return;
+    }
 
     const name = nameField.value.trim();
     const email = emailField.value.trim();
@@ -140,7 +209,8 @@ if (contactForm) {
       return;
     }
 
-    submitButton.disabled = true;
+    isSending = true;
+    updateSensitiveWarning();
     contactForm.setAttribute('aria-busy', 'true');
     showStatus(uiText.sending, 'sending');
 
@@ -168,7 +238,8 @@ if (contactForm) {
       console.error(uiText.consoleError, error);
       showStatus(uiText.failure, 'error');
     } finally {
-      submitButton.disabled = !apiReady;
+      isSending = false;
+      updateSensitiveWarning();
       contactForm.removeAttribute('aria-busy');
     }
   });

@@ -9,8 +9,8 @@
   <link rel="alternate" hreflang="fi" href="https://heini.onrender.com/">
   <link rel="alternate" hreflang="en" href="https://heini.onrender.com/en/">
   <title>Oivalluksen kaarisilta | Heini Sirén</title>
-  <link rel="stylesheet" href="tyyli.css?v=contact-ready-1">
-  <script src="heini.js?v=contact-ready-1" defer></script>
+  <link rel="stylesheet" href="tyyli.css?v=privacy-1">
+  <script src="heini.js?v=privacy-1" defer></script>
 </head>
 <body>
   <a class="skip" href="#sisalto">Siirry sisältöön</a>
@@ -187,8 +187,10 @@
           <h3>Lähetä viesti</h3>
           <div class="form-field"><label for="contact-name">Nimi</label><input id="contact-name" name="name" type="text" autocomplete="name" maxlength="120" required></div>
           <div class="form-field"><label for="contact-email">Sähköposti</label><input id="contact-email" name="email" type="email" autocomplete="email" maxlength="254" required></div>
-          <div class="form-field"><label for="contact-message">Viesti</label><textarea id="contact-message" name="message" rows="6" maxlength="5000" aria-describedby="contact-note" required></textarea></div>
+          <div class="form-field"><label for="contact-message">Viesti</label><textarea id="contact-message" name="message" rows="6" maxlength="5000" aria-describedby="contact-note personal-data-warning" required></textarea></div>
           <p class="form-note" id="contact-note">Kerro lyhyesti yhteydenoton aihe. Älä kirjoita viestiin arkaluonteisia terveystietoja.</p>
+          <p class="form-warning" id="personal-data-warning" role="alert" hidden></p>
+          <p class="form-note">Lue <a href="tietosuoja.html">tietosuojaseloste</a> ennen viestin lähettämistä.</p>
           <button class="submit-button" type="submit" disabled>Lähetä viesti <span aria-hidden="true">↗</span></button>
           <p class="form-status" id="contact-status" role="status" aria-live="polite"></p>
           <noscript><p class="form-note">Lomakkeen lähetys tarvitsee JavaScriptin. Voit ottaa yhteyttä myös sähköpostitse.</p></noscript>
@@ -197,6 +199,6 @@
       </div>
     </section>
   </main>
-  <footer class="site-footer wrap"><p>Oivalluksen kaarisilta · Heini Sirén · Porvoo<br><span>Verkkosivusto · Powered By Tarmola Code Garage</span></p><a href="#sisalto">Takaisin ylös <span aria-hidden="true">↑</span></a></footer>
+  <footer class="site-footer wrap"><p>Oivalluksen kaarisilta · Heini Sirén · Porvoo<br><span>Verkkosivusto · Powered By Tarmola Code Garage</span></p><a href="tietosuoja.html">Tietosuoja</a><a href="#sisalto">Takaisin ylös <span aria-hidden="true">↑</span></a></footer>
 </body>
 </html>
